@@ -1,18 +1,21 @@
 ---
+const base = import.meta.env.BASE_URL
 const { lang = 'en', active } = Astro.props
+
 const links = [
-  { key: 'home',    href: lang === 'es' ? '/es'         : '/' },
-  { key: 'work',    href: lang === 'es' ? '/es/trabajo'  : '/work' },
-  { key: 'about',   href: lang === 'es' ? '/es/sobre-mi' : '/about' },
-  { key: 'contact', href: lang === 'es' ? '/es/contacto' : '/contact' },
+  { key: 'home',    href: `${base}` },
+  { key: 'work',    href: `${base}work` },
+  { key: 'about',   href: `${base}about` },
+  { key: 'contact', href: `${base}contact` },
 ]
+
 const labels = {
   en: { home:'home', work:'work', about:'about', contact:'contact' },
   es: { home:'inicio', work:'trabajo', about:'sobre mí', contact:'contacto' },
 }
 ---
 <nav>
-  <a href={lang === 'es' ? '/es' : '/'} class="logo">CF</a>
+  <a href={base} class="logo">CF</a>
   <div class="links">
     {links.map(l => (
       <a href={l.href} class={active === l.key ? 'active' : ''}>
@@ -20,7 +23,7 @@ const labels = {
       </a>
     ))}
   </div>
-  <a href={lang === 'es' ? '/' : '/es'} class="lang-btn">
+  <a href={lang === 'es' ? `${base}` : `${base}es`} class="lang-btn">
     {lang === 'es' ? 'EN' : 'ES'}
   </a>
 </nav>
