@@ -4,16 +4,16 @@ const { lang = 'en', active } = Astro.props
 
 const links = lang === 'es'
   ? [
-      { key: 'home',    href: `${base}es` },
-      { key: 'work',    href: `${base}es/trabajo` },
-      { key: 'about',   href: `${base}es/sobre-mi` },
-      { key: 'contact', href: `${base}es/contacto` },
+      { key: 'home',    href: `${base}/es` },
+      { key: 'work',    href: `${base}/es/trabajo` },
+      { key: 'about',   href: `${base}/es/sobre-mi` },
+      { key: 'contact', href: `${base}/es/contacto` },
     ]
   : [
-      { key: 'home',    href: `${base}` },
-      { key: 'work',    href: `${base}work` },
-      { key: 'about',   href: `${base}about` },
-      { key: 'contact', href: `${base}contact` },
+      { key: 'home',    href: `${base}/` },
+      { key: 'work',    href: `${base}/work` },
+      { key: 'about',   href: `${base}/about` },
+      { key: 'contact', href: `${base}/contact` },
     ]
 
 const labels = {
