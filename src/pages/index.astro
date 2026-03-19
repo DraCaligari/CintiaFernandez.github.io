@@ -1,17 +1,98 @@
 ---
+import Nav from '../components/Nav.astro'
+import { cv } from '../data/cv'
+import { supabase } from '../lib/supabase'
 
+const { data: featured } = await supabase
+  .from('projects')
+  .select('*')
+  .eq('featured', true)
+  .limit(1)
+  .single()
 ---
-
+<!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
+  <title>{cv.name} — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <Nav active="home" lang="en" />
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">{cv.title.en}</p>
+        <h1>{cv.name.split(' ')[0]}<br/><em>{cv.name.split(' ')[1]}</em></h1>
+        <p class="desc">{cv.bio.en}</p>
+        <div class="btns">
+          <a href="/work" class="btn fill">View work</a>
+          <a href="/contact" class="btn">Get in touch</a>
+        </div>
+      </div>
+      <div class="avatar">
+        <span class="av-init">CF</span>
+        <div class="av-badge">
+          <div>
+            <p class="av-name">{cv.name}</p>
+            <p class="av-role">{cv.title.en}</p>
+          </div>
+          <span class="av-dot"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats">
+      {cv.stats.map(s => (
+        <div class="stat">
+          <p class="stat-n">{s.number}</p>
+          <p class="stat-l">{s.label.en}</p>
+        </div>
+      ))}
+    </section>
+
+    <!-- SKILLS -->
+    <section class="section">
+      <h2 class="sec-title">Skills</h2>
+      <div class="pills">
+        {cv.skills.highlight.map(s => <span class="pill accent">{s}</span>)}
+        {cv.skills.other.map(s => <span class="pill">{s}</span>)}
+      </div>
+    </section>
+  </main>
+</body>
 </html>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #faf9f7; color: #1a1a1a; }
+  main { padding: 32px 28px; max-width: 900px; margin: 0 auto; }
+  .hero { display: grid; grid-template-columns: 1fr 220px; gap: 32px; align-items: center; margin-bottom: 36px; }
+  .eyebrow { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: #D85A30; margin-bottom: 10px; }
+  h1 { font-size: 48px; font-weight: 400; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 14px; }
+  h1 em { color: #D85A30; font-style: italic; }
+  .desc { font-size: 14px; color: #777; line-height: 1.7; margin-bottom: 18px; }
+  .btns { display: flex; gap: 10px; }
+  .btn { font-size: 12px; padding: 9px 20px; border-radius: 30px; border: 1px solid #ddd; background: #fff; color: #1a1a1a; text-decoration: none; }
+  .btn.fill { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .avatar { background: #ede9e0; border-radius: 14px; aspect-ratio: 1; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 12px; position: relative; overflow: hidden; }
+  .av-init { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-60%); font-size: 80px; font-weight: 300; color: #D85A30; opacity: 0.15; }
+  .av-badge { background: #fff; border-radius: 10px; padding: 8px 12px; border: 1px solid #eee; width: calc(100% - 20px); display: flex; justify-content: space-between; align-items: center; }
+  .av-name { font-size: 12px; font-weight: 500; }
+  .av-role { font-size: 10px; color: #999; }
+  .av-dot { width: 8px; height: 8px; border-radius: 50%; background: #4caf50; flex-shrink: 0; }
+  .stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: #e8e5df; border: 1px solid #e8e5df; border-radius: 12px; overflow: hidden; margin-bottom: 36px; }
+  .stat { background: #faf9f7; padding: 16px 20px; }
+  .stat-n { font-size: 30px; font-weight: 400; letter-spacing: -0.03em; color: #1a1a1a; }
+  .stat-l { font-size: 11px; color: #999; margin-top: 2px; }
+  .section { margin-bottom: 36px; }
+  .sec-title { font-size: 14px; font-weight: 500; color: #1a1a1a; padding-bottom: 10px; border-bottom: 1px solid #e8e5df; margin-bottom: 14px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 7px; }
+  .pill { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: 1px solid #e8e5df; color: #888; background: #fff; }
+  .pill.accent { border-color: #D85A30; color: #D85A30; background: #fdf4f1; }
+</style>
