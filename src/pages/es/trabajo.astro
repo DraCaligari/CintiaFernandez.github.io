@@ -1,0 +1,75 @@
+---
+import Nav from '../../components/Nav.astro'
+import { supabase } from '../../lib/supabase'
+
+const { data: projects } = await supabase
+  .from('projects')
+  .select('*')
+  .order('year', { ascending: false })
+
+const categories = ['Todos', ...new Set(projects?.map(p => p.category) ?? [])]
+---
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width" />
+  <title>Proyectos — CF</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <Nav active="work" lang="es" />
+  <main>
+    <div class="filters">
+      {categories.map((cat, i) => (
+        <button class={`fp ${i === 0 ? 'active' : ''}`} data-cat={cat}>{cat}</button>
+      ))}
+    </div>
+    <div class="grid" id="grid">
+      {projects?.map(p => (
+        <div class="card" data-cat={p.category}>
+          <div class="thumb" style={p.image_url ? `background-image:url(${p.image_url});background-size:cover;` : ''}></div>
+          <div class="info">
+            <p class="tag">{p.category}</p>
+            <p class="name">{p.title_es}</p>
+            <p class="desc">{p.description_es}</p>
+            {p.url && <a href={p.url} target="_blank" class="link">Ver proyecto →</a>}
+          </div>
+        </div>
+      ))}
+    </div>
+  </main>
+</body>
+</html>
+
+<script>
+  const btns = document.querySelectorAll('.fp')
+  const cards = document.querySelectorAll('.card')
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      const cat = btn.dataset.cat
+      cards.forEach((card: any) => {
+        card.style.display = (cat === 'Todos' || card.dataset.cat === cat) ? 'block' : 'none'
+      })
+    })
+  })
+</script>
+
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #faf9f7; }
+  main { padding: 32px 28px; max-width: 900px; margin: 0 auto; }
+  .filters { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 24px; }
+  .fp { font-size: 12px; padding: 6px 16px; border-radius: 20px; border: 1px solid #e8e5df; background: #fff; color: #888; cursor: pointer; }
+  .fp.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card { border: 1px solid #e8e5df; border-radius: 12px; overflow: hidden; background: #fff; }
+  .card:hover { border-color: #D85A30; }
+  .thumb { aspect-ratio: 16/9; background: #ede9e0; }
+  .info { padding: 12px 14px; }
+  .tag { font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; color: #D85A30; margin-bottom: 4px; }
+  .name { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .desc { font-size: 12px; color: #999; line-height: 1.5; margin-bottom: 8px; }
+  .link { font-size: 12px; color: #D85A30; text-decoration: none; }
+</style>
