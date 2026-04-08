@@ -57,13 +57,45 @@ import { cv } from '../../data/cv'
 </html>
 
 <script>
+  const SERVICE_ID  = 'service_4qcfgqh'   // ← tu Service ID
+  const TEMPLATE_ID = 'template_fp1jpwu'  // ← tu Template ID
+  const PUBLIC_KEY  = 'gRNmBVej6gh5lCbz7'      // ← tu Public Key
+
   const form = document.getElementById('contact-form') as HTMLFormElement
   const msg  = document.getElementById('form-msg') as HTMLElement
+  const btn  = form.querySelector('button') as HTMLButtonElement
+
+  // Cargar EmailJS
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js'
+  script.onload = () => (window as any).emailjs.init(PUBLIC_KEY)
+  document.head.appendChild(script)
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
-    msg.textContent = '✓ ¡Mensaje enviado! Te respondo pronto.'
-    msg.style.color = '#4caf50'
-    form.reset()
+    const data = Object.fromEntries(new FormData(form))
+
+    btn.disabled = true
+    btn.textContent = 'Sending...'
+    msg.textContent = ''
+
+    try {
+      await (window as any).emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        from_name:  data.name,
+        from_email: data.email,
+        message:    data.message,
+      })
+
+      msg.textContent = "✓ Message sent! I'll get back to you soon."
+      msg.style.color = '#4caf50'
+      form.reset()
+    } catch {
+      msg.textContent = '✗ Something went wrong. Try emailing directly.'
+      msg.style.color = '#e53935'
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Send message'
+    }
   })
 </script>
 
