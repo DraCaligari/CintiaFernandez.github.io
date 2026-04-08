@@ -23,6 +23,7 @@ jobs:
         env:
           PUBLIC_SUPABASE_URL: ${{ secrets.PUBLIC_SUPABASE_URL }}
           PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PUBLIC_SUPABASE_ANON_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
