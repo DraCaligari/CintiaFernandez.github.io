@@ -63,11 +63,19 @@ import { cv } from '../data/cv'
 </html>
 
 <script>
-  const RESEND_KEY = import.meta.env.PUBLIC_RESEND_API_KEY
+  const SERVICE_ID  = 'service_4qcfgqh'   // ← tu Service ID
+  const TEMPLATE_ID = 'template_axrhyr8'  // ← tu Template ID
+  const PUBLIC_KEY  = 'gRNmBVej6gh5lCbz7'      // ← tu Public Key
 
   const form = document.getElementById('contact-form') as HTMLFormElement
   const msg  = document.getElementById('form-msg') as HTMLElement
   const btn  = form.querySelector('button') as HTMLButtonElement
+
+  // Cargar EmailJS
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js'
+  script.onload = () => (window as any).emailjs.init(PUBLIC_KEY)
+  document.head.appendChild(script)
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -78,31 +86,17 @@ import { cv } from '../data/cv'
     msg.textContent = ''
 
     try {
-      const res = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${RESEND_KEY}`,
-        },
-        body: JSON.stringify({
-          from: 'Portfolio <onboarding@resend.dev>',
-          to: ['cfernandezv000@gmail.com'],
-          reply_to: data.email,
-          subject: `New message from ${data.name}`,
-          text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
-        }),
+      await (window as any).emailjs.send(SERVICE_ID, TEMPLATE_ID, {
+        from_name:  data.name,
+        from_email: data.email,
+        message:    data.message,
       })
 
-      if (res.ok) {
-        msg.textContent = '✓ Message sent! I\'ll get back to you soon.'
-        msg.style.color = '#4caf50'
-        form.reset()
-      } else {
-        msg.textContent = '✗ Something went wrong. Try emailing directly.'
-        msg.style.color = '#e53935'
-      }
+      msg.textContent = "✓ Message sent! I'll get back to you soon."
+      msg.style.color = '#4caf50'
+      form.reset()
     } catch {
-      msg.textContent = '✗ Network error. Please try again.'
+      msg.textContent = '✗ Something went wrong. Try emailing directly.'
       msg.style.color = '#e53935'
     } finally {
       btn.disabled = false
