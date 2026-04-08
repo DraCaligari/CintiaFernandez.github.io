@@ -3,7 +3,7 @@ import Nav from '../components/Nav.astro'
 import { supabase } from '../lib/supabase'
 
 const { data: projects } = await supabase
-  .from('projects')
+  .from('works')
   .select('*')
   .order('year', { ascending: false })
 
