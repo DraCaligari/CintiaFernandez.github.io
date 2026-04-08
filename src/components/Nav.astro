@@ -1,28 +1,30 @@
 ---
-const base = import.meta.env.BASE_URL
-const { lang = 'en', active } = Astro.props
+type Lang = 'en' | 'es'
+type LinkKey = 'home' | 'work' | 'about' | 'contact'
 
-const links = lang === 'es'
+const { lang = 'en', active } = Astro.props as { lang?: Lang; active?: string }
+
+const links: Array<{ key: LinkKey; href: string }> = lang === 'es'
   ? [
-      { key: 'home',    href: `${base}/es` },
-      { key: 'work',    href: `${base}/es/trabajo` },
-      { key: 'about',   href: `${base}/es/sobre-mi` },
-      { key: 'contact', href: `${base}/es/contacto` },
+      { key: 'home',    href: `/es` },
+      { key: 'work',    href: `/es/trabajo` },
+      { key: 'about',   href: `/es/sobre-mi` },
+      { key: 'contact', href: `/es/contacto` },
     ]
   : [
-      { key: 'home',    href: `${base}/` },
-      { key: 'work',    href: `${base}/work` },
-      { key: 'about',   href: `${base}/about` },
-      { key: 'contact', href: `${base}/contact` },
+      { key: 'home',    href: `/` },
+      { key: 'work',    href: `/work` },
+      { key: 'about',   href: `/about` },
+      { key: 'contact', href: `/contact` },
     ]
 
-const labels = {
+const labels: Record<Lang, Record<LinkKey, string>> = {
   en: { home:'home', work:'work', about:'about', contact:'contact' },
   es: { home:'inicio', work:'trabajo', about:'sobre mí', contact:'contacto' },
 }
 ---
 <nav>
-  <a href={lang === 'es' ? `${base}es` : `${base}`} class="logo">CF</a>
+  <a href={lang === 'es' ? `/es` : `/`} class="logo">CF</a>
   <div class="links">
     {links.map(l => (
       <a href={l.href} class={active === l.key ? 'active' : ''}>
@@ -30,7 +32,7 @@ const labels = {
       </a>
     ))}
   </div>
-  <a href={lang === 'es' ? `${base}` : `${base}/es`} class="lang-btn">
+  <a href={lang === 'es' ? `/` : `/es`} class="lang-btn">
     {lang === 'es' ? 'EN' : 'ES'}
   </a>
 </nav>
