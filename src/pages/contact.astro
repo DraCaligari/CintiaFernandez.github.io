@@ -63,16 +63,51 @@ import { cv } from '../data/cv'
 </html>
 
 <script>
+  const RESEND_KEY = import.meta.env.PUBLIC_RESEND_API_KEY
+
   const form = document.getElementById('contact-form') as HTMLFormElement
   const msg  = document.getElementById('form-msg') as HTMLElement
+  const btn  = form.querySelector('button') as HTMLButtonElement
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
     const data = Object.fromEntries(new FormData(form))
-    // Por ahora solo muestra confirmación — conectar Resend en siguiente paso
-    msg.textContent = '✓ Message sent! I\'ll get back to you soon.'
-    msg.style.color = '#4caf50'
-    form.reset()
+
+    btn.disabled = true
+    btn.textContent = 'Sending...'
+    msg.textContent = ''
+
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${RESEND_KEY}`,
+        },
+        body: JSON.stringify({
+          from: 'Portfolio <onboarding@resend.dev>',
+          to: ['cfernandezv000@gmail.com'],
+          reply_to: data.email,
+          subject: `New message from ${data.name}`,
+          text: `Name: ${data.name}\nEmail: ${data.email}\n\nMessage:\n${data.message}`,
+        }),
+      })
+
+      if (res.ok) {
+        msg.textContent = '✓ Message sent! I\'ll get back to you soon.'
+        msg.style.color = '#4caf50'
+        form.reset()
+      } else {
+        msg.textContent = '✗ Something went wrong. Try emailing directly.'
+        msg.style.color = '#e53935'
+      }
+    } catch {
+      msg.textContent = '✗ Network error. Please try again.'
+      msg.style.color = '#e53935'
+    } finally {
+      btn.disabled = false
+      btn.textContent = 'Send message'
+    }
   })
 </script>
 
